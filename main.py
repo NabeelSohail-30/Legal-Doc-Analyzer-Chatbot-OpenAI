@@ -8,6 +8,19 @@ openai.api_key = "YOUR_OPENAI_API_KEY"
 # Streamlit app layout
 st.title("Legal Document Analyzer")
 
+
+def get_completion(prompt, model="gpt-3.5-turbo"):
+    messages = [{"role": "system",
+                 "content": "You are an expert and helpful legal advisor that detects the risky and safe clauses from a legal document"},
+                {"role": "user", "content": prompt}]
+    response = openai.ChatCompletion.create(
+        model=model,
+        messages=messages,
+        temperature=0,  # this is the degree of randomness of the model's output
+    )
+    return response.choices[0].message["content"]
+
+
 # File upload section
 uploaded_file = st.file_uploader("Upload a legal document", type=["pdf", "docx", "txt"])
 
@@ -21,10 +34,16 @@ if uploaded_file:
         Analyze the following Legal Document delimited by triple backticks \
         provide a JSON Object response \
         mentioning the following: \
-
         1. Risky Clauses \
         2. Partial Risky Clauses \
         3. Safe Clauses \
+        
+        JSON object structure \
+        {{
+            "Risky Clauses": [],
+            "Partial Risky Clauses": [],
+            "Safe Clauses": []
+        }}
 
         Legal Document:
         ```
@@ -32,20 +51,10 @@ if uploaded_file:
         ```
     """
 
+    analysis = get_completion(prompt)
+
     # Analyze the document using the OpenAI API
     st.subheader("Analysis Results")
-
-    # Generate analysis using OpenAI GPT model
-    response = openai.Completion.create(
-        engine="text-davinci-002",
-        prompt=prompt,
-        max_tokens=150,
-        n=1,
-        stop=None,
-        temperature=0.7,
-    )
-
-    analysis = response.choices[0].text.strip()
 
     # Parse the JSON response from the model into a Python dictionary
     try:
