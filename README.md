@@ -22,7 +22,7 @@ To run this project locally, follow these steps:
 
 1. Clone the repository to your local machine.
 2. Install the required Python packages by running:
-   ` pip install -r requirements.txt`
+   ` pip install openai langchain streamlit`
 3. Obtain an API key from OpenAI
 4. Run the application using the following command:
    `streamlit run  main.py`
